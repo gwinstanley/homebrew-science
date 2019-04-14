@@ -9,3 +9,5 @@ Assuming you already have [Homebrew](https://brew.sh/) installed, you can use th
 brew tap gwinstanley/science
 ```
 and then you can install its formulae as usual (```brew install ...```), and they should show up in formula searches (```brew search ...```).
+
+Similarly, casks may be installed as usual (```brew cask install ...```).
