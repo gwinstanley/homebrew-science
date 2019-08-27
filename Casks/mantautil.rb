@@ -1,13 +1,13 @@
 cask 'mantautil' do
 
   version '4.2.1'
-  sha256 'd4befcc475ee501835c59179d4dc025f260746b40c4190493936fd16ec439256'
+  sha256 'f1f4d63e3a1ac31e3253a399a202da84a093e97963a978bdf5d90b86d8479d4a'
 
   url "https://www.pelagicon.com/software/mantautil/mantautil-#{version}.dmg"
   name 'MantaUtil'
   homepage 'https://www.pelagicon.com/software/mantautil/'
 
-  depends_on macos: '>= 10.11'
+  depends_on macos: '>= :mavericks'
 
   app 'MantaUtil.app'
 
