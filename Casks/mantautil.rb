@@ -12,6 +12,16 @@ cask 'mantautil' do
   app 'MantaUtil.app'
 
   data_dir = File.expand_path("~/Library/Application Support/MantaUtil")
+  shim_script = "#{staged_path}/mantautil.sh"
+  binary shim_script, target: "#{token}"
+
+  preflight do
+    IO.write shim_script, <<~EOS
+      #!/bin/sh
+      open "#{appdir}/MantaUtil.app" &
+    EOS
+    File.chmod 0755, shim_script
+  end
 
   postflight do
     require 'open-uri'
