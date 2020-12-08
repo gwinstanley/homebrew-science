@@ -3,15 +3,19 @@ cask 'mantautil' do
   version '4.2.1'
   sha256 'f1f4d63e3a1ac31e3253a399a202da84a093e97963a978bdf5d90b86d8479d4a'
 
-  url "https://www.pelagicon.com/software/mantautil/mantautil-#{version}.dmg"
+  url "http://localhost/~stan/pelagicon/software/mantautil/mantautil-#{version}.dmg"
   name 'MantaUtil'
-  homepage 'https://www.pelagicon.com/software/mantautil/'
+  homepage 'http://localhost/~stan/pelagicon/software/mantautil/'
+#   url "https://www.pelagicon.com/software/mantautil/mantautil-#{version}.dmg"
+#   name 'MantaUtil'
+#   homepage 'https://www.pelagicon.com/software/mantautil/'
 
-  depends_on macos: '>= :mavericks'
+  depends_on macos: '>= :high_sierra'
 
   app 'MantaUtil.app'
 
   data_dir = File.expand_path("~/Library/Application Support/MantaUtil")
+  # shim script (https://github.com/Homebrew/homebrew-cask/issues/18809)
   shim_script = "#{staged_path}/mantautil.sh"
   binary shim_script, target: "#{token}"
 
