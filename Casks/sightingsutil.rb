@@ -5,9 +5,9 @@ cask 'sightingsutil' do
 
   arch arm: 'arm64', intel: 'x86_64'
   classifier = on_arch_conditional arm: '', intel: '-intel'
-  version '5.0.3'
-  sha256 arm:   '64834e776323dd551d607a1657c02ea61c6111cfd7a6cef20b993ab74a47b02a',
-         intel: 'ea760c70cd3af8833cbe86d544bfb35ef7a3345beadd80ac3e5209d51c42c337'
+  version '5.1.0'
+  sha256 arm:   'd43a0b4c35417a35eb7c95b5e0424ee1afec7619f1b565be6f5189ac33e93128',
+         intel: '2be4335123c1670e2d8aa2d8323756eda9409cacf6f1c0a31b2f478c2002c079'
 
   url "https://www.pelagicon.com/software/#{appnameLC}/#{appname}-#{version}#{classifier}.dmg"
   name appname
@@ -18,6 +18,7 @@ cask 'sightingsutil' do
 
   app "#{appname}.app"
 
+  verC = version.gsub(/^(\d+\.\d+).*/, '\1')
   data_dir = File.expand_path("~/Library/Application Support/#{appname}")
   # shim script (https://github.com/Homebrew/homebrew-cask/issues/18809)
   shim_script = "#{staged_path}/#{appnameLC}.sh"
@@ -61,7 +62,7 @@ cask 'sightingsutil' do
   end
 
   uninstall quit: ["com.pelagicon.#{appnameLC}", "pelagicon.#{appnameLC}.app.gui.fx"],
-            trash: ["~/Library/Application Support/#{appname}/*.jar", "~/Library/Application Support/#{appname}/.checksums.txt"]
+            trash: ["#{data_dir}/#{appname}-plugin-*-#{verC}*.jar"]
 
   zap trash: data_dir
 
