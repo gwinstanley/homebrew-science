@@ -14,56 +14,32 @@ cask 'sightingsutil' do
   desc 'Utility for ecologists to assist in managing organism sightings databases'
   homepage "https://www.pelagicon.com/software/#{appnameLC}/"
 
-  depends_on macos: '>= :big_sur'
+  depends_on macos: :big_sur
 
   app "#{appname}.app"
 
   verC = version.gsub(/^(\d+\.\d+).*/, '\1')
   data_dir = File.expand_path("~/Library/Application Support/#{appname}")
-  # shim script (https://github.com/Homebrew/homebrew-cask/issues/18809)
   shim_script = "#{staged_path}/#{appnameLC}.sh"
   binary shim_script, target: "#{token}"
 
-  preflight do
-    IO.write shim_script, <<~EOS
+  preflight_steps do
+    write_file shim_script, <<~EOS
       #!/bin/sh
-      open "#{appdir}/#{appname}.app" &
+      open "{{appdir}}/#{appname}.app" &
     EOS
-    File.chmod 0755, shim_script
+    set_permissions shim_script, "0755"
   end
 
-  postflight do
-    require 'open-uri'
-    require 'json'
-    require 'openssl'
-    Dir.mkdir(data_dir) unless File.exists?(data_dir)
-    checksumFile = "#{data_dir}/.checksums.txt"
-    File.delete(checksumFile) if File.exists?(checksumFile)
-    # Download additional dependent plugins
-    fh = URI.open("https://www.pelagicon.com/software/#{appnameLC}/version.php?type=dmg")
-    json = JSON.parse(fh.read)
-    plugins = json['plugins']
-    plugins.each do |key, val|
-      url = val['url']
-      checksum = val['sha256']
-      jar = url.gsub(/^.+\//, '')
-      pluginFile = "#{data_dir}/#{jar}"
-      puts "Downloading plugin file: #{jar}"
-      IO.copy_stream(URI.open(url), pluginFile)
-      # Validate checksum
-      sha = OpenSSL::Digest::SHA256.new(File.binread(pluginFile)).to_s
-      if sha == checksum
-        File.open(checksumFile, 'a') { |f| f.puts "#{checksum}  #{jar}" }
-      else
-        puts "Failed checksum match for downloaded plugin: #{jar}"
-        File.delete(pluginFile)
-      end
-    end
+  postflight_steps do
+    run '/usr/bin/xattr', args: ['-r', '-d', 'com.apple.quarantine', "/Applications/#{appname}.app"], sudo: :if_needed
   end
 
-  uninstall quit: ["com.pelagicon.#{appnameLC}", "pelagicon.#{appnameLC}.app.gui.fx"],
+  uninstall quit: ["com.pelagicon.#{appnameLC}"],
             trash: ["#{data_dir}/#{appname}-plugin-*-#{verC}*.jar"]
 
   zap trash: data_dir
+
+  caveats "If installed for offline use ensure to run the application at least once while online first."
 
 end
